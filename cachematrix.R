@@ -1,19 +1,9 @@
-## Put comments here that give an overall description of what your
-## functions do
+## This function accepts a square matrix as an argument,
+## then returns a list of methods that can be passed to cacheSolve()
 
-makeCacheMatrix <- function(x = matrix()) {
-  ## @x: a square invertible matrix
-  ## return: a list containing functions to
-  ##              1. set the matrix
-  ##              2. get the matrix
-  ##              3. set the inverse
-  ##              4. get the inverse
-  ##         this list is used as the input to cacheSolve()
-  
+cacheMatrix <- function(x = matrix()) {
   inv = NULL
   set = function(y) {
-    # use `<<-` to assign a value to an object in an environment 
-    # different from the current environment. 
     x <<- y
     inv <<- NULL
   }
@@ -23,43 +13,46 @@ makeCacheMatrix <- function(x = matrix()) {
   list(set=set, get=get, setinv=setinv, getinv=getinv)
 }
 
-
-## Write a short comment describing this function
+## This function can only accept as an argument, an object of type 
+## 'cacheMatrix', and returns the inverse of the matrix 
 
 cacheSolve <- function(x, ...) {
-  ## @x: output of makeCacheMatrix()
-  ## return: inverse of the original matrix input to makeCacheMatrix()
     inv = x$getinv()
     
-    # if the inverse has already been calculated
+    ## if the inverse has already been calculated, retrieve from cache
+    ## and skip the computation
     if (!is.null(inv)){
-        # get it from the cache and skips the computation. 
         message("getting cached data")
         return(inv)
     }
     
-    # otherwise, calculates the inverse 
+    # otherwise, compute the inverse, and store in the cache
     mat.data = x$get()
     inv = solve(mat.data, ...)
-    
-    # sets the value of the inverse in the cache via the setinv function.
     x$setinv(inv)
     
     return(inv)
 }
 
-test = function(mat){
-  ## @mat: an invertible matrix
-  
-  temp = makeCacheMatrix(mat)
-  
-  start.time = Sys.time()
-  cacheSolve(temp)
-  dur = Sys.time() - start.time
-  print(dur)
-  
-  start.time = Sys.time()
-  cacheSolve(temp)
-  dur = Sys.time() - start.time
-  print(dur)
-}
+## unit test and time-check function found online
+
+# set.seed(1110201)
+# r = rnorm(1000000)
+# mat1 = matrix(r, nrow=1000, ncol=1000)
+# test(mat1)
+# 
+# test = function(mat){
+#   ## @mat: an invertible matrix
+#   
+#   temp = cacheMatrix(mat)
+#   
+#   start.time = Sys.time()
+#   cacheSolve(temp)
+#   dur = Sys.time() - start.time
+#   print(dur)
+#   
+#   start.time = Sys.time()
+#   cacheSolve(temp)
+#   dur = Sys.time() - start.time
+#   print(dur)
+# }
